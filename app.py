@@ -35,8 +35,8 @@ def handle_message(event):
         },
         {
             "index": 17,
-            "porductId": "789",
-            "emojiId": "10855",
+            "porductId": "5ac2213e040ab15980c9b447",
+            "emojiId": "006",
         },
     ]
     test_message = TextSendMessage(text='''$ Master Finance $
