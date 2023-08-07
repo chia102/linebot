@@ -20,6 +20,12 @@ def callback():
 
     return 'OK'
 
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
+    profile = line_bot_api.get_profile(event.source.user_id)
+    uid = profile.user_id
+    message_text = str(event,message.text).lower()
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
