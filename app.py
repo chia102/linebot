@@ -7,7 +7,6 @@ app = Flask(__name__)
 
 @app.route("/callback", methods=['POST'])
 def callback():
-
     signature = request.headers['X-Line-Signature']
 
     body = request.get_data(as_text=True)
@@ -20,16 +19,18 @@ def callback():
 
     return 'OK'
 
+
+
+
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    message_text =str(event.message.text).lower()
+    message_text = str(event.message.text).lower()
 
     if message_text == '@使用說明':
         about_us_event(event)
     if message_text == '@小幫手':
         Usage(event)
-   
-
 
 if __name__ == "__main__":
     app.run()
