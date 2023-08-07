@@ -1,4 +1,5 @@
 from line_bot_api import *
+from events.basic import *
 
 def about_us_event(event):
     emoji = [
@@ -22,9 +23,20 @@ def about_us_event(event):
     line_bot_api.reply_message(
         event.reply_token,
         [test_message,sticker_message])
-    # message = TextSendMessage(text=event.message.text)
-    # line_bot_api.reply_message(event.reply_token, message)
 
+def push_msg(event,msg):
+    try:
+        user_id =event.sourse.user_id
+        line_bot_api.push_message(room_id,TemplateSendMessage(text=msg))
+    except:
+        room_id = event.source.room_id
+        line_bot_api.push_message(room_id,TemplateSendMessage(text=msg))
 
-# if __name__ == "__main__":
-#     app.run()
+def Usage(event):
+    push_msg(event,"  🙂🙂 查詢方法 🙂🙂  \
+             \n☢小幫手可以查詢油價➡匯率➡股價\
+             \n\
+             \n☢油價通知➡➡➡書入查詢油價\
+             \n☢匯率通知➡➡➡書入查詢匯率\
+             \n☢匯率兌換➡➡➡書入換匯USD/TWD\
+             \n☢股價查詢➡➡➡輸入#股票代號")    
