@@ -29,10 +29,10 @@ def handle_message(event):
 
     if message_text == '@使用說明':
         about_us_event(event)
-    if message_text == '@使用說明':
+    if message_text == '@查詢方法':
         Usage(event)
 
-    if event.message.text == "@使用說明":
+    if event.message.text == "@小幫手":
         buttons_template = TemplateSendMessage(
             alt_text='小幫手 template',
             template=ButtonsTemplate(
