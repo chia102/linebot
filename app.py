@@ -61,7 +61,7 @@ def handle_message(event):
 
 @handler.add(FollowEvent)
 def handle_folow(event):
-    welcome_msg="""哈瞜~您好，歡迎您成為 Chia's 的好友!"""
+    welcome_msg="""哈瞜~有種封鎖就不要解開阿，歡迎您成為 Chia's 的好友!"""
 
     line_bot_api.reply_message(
         event.reply_token,
