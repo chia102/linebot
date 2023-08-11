@@ -1,7 +1,8 @@
+
 #載入LineBot所需要的套件
 from line_bot_api import *
 from events.basic import *
-from events.oli import *
+from events.oil import *
 from events.Msg_Template import *
 from model.mongodb import *
 from events.EXRate import *
@@ -68,14 +69,28 @@ def handel_message(event):
         content = write_my_stock(uid, user_name,stockNumber,msg[6:7],msg[7:])
         line_bot_api.push_message(uid, TextSendMessage(content))
         return 0
+
+    if re.match('股票清單' , msg):
+        line_bot_api.push_message(uid, TextSendMessage("稍等一下，股票查詢中..."))
+        content = write_my_stock(user_name, uid) 
+        line_bot_api.push_message(uid,TextSendMessage(content))
+
+    if re.match("刪除[0-9]{4}",msg):   
+        content = delete_my_stock(user_name, msg[2:]) 
+        line_bot_api.push_message(uid, TextSendMessage(content))
+        return 0
     
+    if re.match("清空股票",msg):   
+        content = delete_my_allstock(user_name, uid) 
+        line_bot_api.push_message(uid, TextSendMessage(content))
+        return 0
     # else:
     #     content = write_my_stock(uid, user_name, stockNumber, "未設定",'未設定')
     #     line_bot_api.push_message(uid, TextSendMessage(content))
     #     return 0
 
-    if (emsg.startswith('#')):
-        text = emsg[1:]
+    if (msg.startswith('#')):
+        text = msg[1:]
         content =''
 
         stock_rt = twstock.realtime.get(text)
@@ -112,18 +127,23 @@ def handel_message(event):
         message = show_Button()
         line_bot_api.reply_message(event.reply_token,message)
     
+    if re.match('查詢匯率[A-Z]{3}', msg):
+        msg = msg[4:]
+        line_bot_api.reply_message(event.reply_token,message)
+    
     if re.match('換匯[A-Z]{3}/[A-Z{3}]',msg):
         line_bot_api.push_message(uid,TextSendMessage('將為您做外匯計算...'))
         content = getExchangeRate(msg)
         line_bot_api.push_message(uid, TextSendMessage(content))
 
 
+
 ##############封鎖和解封################
 @handler.add(FollowEvent)
 def handle_follow(event):
     welcome_msg ="""Hello~ 歡迎您的加入~
-成為Tyler的好友!
-我是Tyler 您的小幫手
+成為chiachia 的好友!
+我是chiachia 您的小幫手
 這裡有許多的股票資訊
 可以直接點選下面的功能來使用~"""
 
