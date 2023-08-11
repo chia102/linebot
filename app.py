@@ -12,6 +12,16 @@ import twstock
 
 app = Flask(__name__)
 
+def cache_user_stock():
+    db=constructor_stock()
+    nameList = db.list_collection_names()
+    users = []
+    for i in range(len(nameList)):
+        collect = db[nameList[i]]
+        cel = list(collect.find({"tag":'stock'}))
+        users.append(cel)
+    return users
+
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-LineSignature header value
@@ -84,11 +94,46 @@ def handel_message(event):
         content = delete_my_allstock(user_name, uid) 
         line_bot_api.push_message(uid, TextSendMessage(content))
         return 0
+    if re.match("股價提醒",msg): 
+        import schedule
+        import time
+
+        def look_stock_price(stock, condidtion, price, userID):
+            print(userID)
+            url = 'htttps://tw.stock.yahoo.com/q/q?s=' + stock
+            list_req = request.get(url)
+            soup = BeautifulSoup(list_req.content, "html.parser")
+            getstock= soup.find_All('b')[1].text
+            content = stock + "當前股市價格為: " + getstock
+            if condition =='<':
+                content += "\n篩選條件為: < "+ price
+                if float(getstock) < float(price):
+                    content += "\n符合" + getstock + " < " + price+ "的篩選條件"
+                    line_bot_api.push_message(userID, TemplateSendMessage(text=content))
+            elif condition == '>':
+                content += "\n篩選條件為: < "+ price
+                if float(getstock) == float(price):
+                    content += "\n符合" + getstock + " < " + price+ "的篩選條件"
+                    line_bot_api.push_message(userID, TemplateSendMessage(text=content))
+    def job():
+        print('HH')
+        dataList = cache_user_stock()
+
+        for i in range(len(dataList)):
+            for k in range(len(dataList[i])):
+                look_stock_price(dataList[i][k]['favorite_stock'], dataList[i][k]['condition'], dataList[i][k]['price'], dataList[i][k]['userID'])  
+    
+    schedule.every(30).second.do(job).tag('daily-task-stock'+uid,'second')
     # else:
     #     content = write_my_stock(uid, user_name, stockNumber, "未設定",'未設定')
     #     line_bot_api.push_message(uid, TextSendMessage(content))
     #     return 0
 
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+        
     if (msg.startswith('#')):
         text = msg[1:]
         content =''
